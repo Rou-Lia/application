@@ -559,6 +559,63 @@ h1,.cat-heading,.spin-btn,.result-card h2,.love-overlay h2{font-family:var(--app
 header.has-photo{background-size:cover!important;background-position:center!important}header.has-photo::after{display:none!important}
 .nav-btn .ic{height:22px;display:flex;align-items:center;justify-content:center;font-size:0}.nav-icon{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
+  /* ===== EN-TÊTE COMPACT AU DÉFILEMENT ===== */
+header{
+  transition:min-height .25s ease, padding .25s ease, border-radius .25s ease;
+}
+header.compact{
+  min-height:0;
+  padding:12px 20px 12px;
+  border-radius:0 0 18px 18px;
+}
+header.compact h1{ font-size:18px; line-height:1.2; }
+header.compact .swash,
+header.compact .stats-row{ display:none; }
+header.compact::after{ display:none; }
+header.compact .icon-btn{ width:34px; height:34px; font-size:14px; }
+
+/* En-tête initial plus bas sur téléphone */
+@media (max-width:480px){
+  header{ min-height:auto; padding:20px 20px 16px; }
+  h1{ font-size:23px; }
+  .stats-row{ margin-top:12px; }
+}
+
+/* ===== GESTION DE L'ORDRE DES CATÉGORIES ===== */
+.category-edit{
+  grid-template-columns:40px 1fr 38px 28px 28px 32px !important;
+  gap:6px !important;
+}
+.cat-move{
+  border:none;
+  background:var(--paper-dim);
+  color:var(--plum-dark);
+  width:26px;
+  height:32px;
+  border-radius:8px;
+  font-size:12px;
+  cursor:pointer;
+}
+.cat-move:disabled{ opacity:.3; cursor:not-allowed; }
+.cat-sort-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
+}
+.cat-sort-btn{
+  flex:1;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--plum-dark);
+  border-radius:12px;
+  padding:9px 10px;
+  font-family:inherit;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+.cat-sort-btn:active{ transform:scale(.97); }
+  
 </style>
 </head>
 <body>
@@ -742,6 +799,13 @@ header.has-photo{background-size:cover!important;background-position:center!impo
 
     <div class="settings-section">
       <label class="field-label">Mes catégories</label>
+
+      <div class="cat-sort-row">
+        <button type="button" class="cat-sort-btn" id="sortCategoriesBtn">
+          ↕ Classer de A à Z
+        </button>
+      </div>
+
       <div class="category-manager" id="categoryManager"></div>
       <p class="settings-hint">Modifie le nom, l'emoji ou la couleur directement. Une catégorie contenant encore des idées ne peut pas être supprimée.</p>
       <button class="btn btn-ghost btn-block" id="addCategoryFromSettingsBtn" style="margin-top:8px;">+ Ajouter une catégorie</button>
@@ -805,7 +869,8 @@ const DEFAULT_SETTINGS = {
   title: "On fait quoi\naujourd'hui ?", headerPhoto: null, themeId: 'plum-gold', fontId: 'inter',
   splashTitle: 'Nos grands plans à nous',
   splashSubtitle: 'Nos projets, nos envies et nos petits bonheurs. 🌿',
-  splashImage: null
+  splashImage: null,
+  categoryOrder: []
 };
 
 const SEED_CATEGORIES = [
@@ -2064,6 +2129,16 @@ function renderSplashScreen(){
   document.getElementById('splashImageContainer').innerHTML=settings.splashImage ? `<img class="splash-hero-image" src="${settings.splashImage}" alt="Photo de bienvenue">` : '<span class="splash-plant" aria-hidden="true">🪴</span>';
 }
 
+  /* ---------------- ORDRE DES CATÉGORIES ---------------- */
+
+/*
+ * L'ordre choisi est enregistré dans les réglages partagés,
+ * ce qui évite toute modification de la base Supabase.
+ */
+function applyCategoryOrder(){
+  const savedOrder = Array.isArray(STATE.settings.categoryOrder)
+    ? STATE.settings.
+    
 /* ---------------- MASTER RENDER ---------------- */
 function renderAll(){
   renderSplashScreen();
