@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
 <title>Nos grands plans</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="<nav>://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/confetti.browser.min.js"></script>
@@ -781,6 +781,352 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   font-weight:600;
 }
   
+/* ===== ONGLET RECETTES ET COURSES ===== */
+
+.recipes-intro{
+  margin:15px 0 14px;
+  padding:17px 16px;
+  border-radius:20px;
+  background:
+    linear-gradient(
+      135deg,
+      var(--violet-soft, #EFE8F9),
+      var(--green-soft, #E7F1EA)
+    );
+}
+
+.recipes-intro h2,
+.shopping-heading h2,
+.recipes-heading h2{
+  margin:0;
+  color:var(--plum-dark);
+  font-size:18px;
+  font-weight:700;
+  letter-spacing:-.25px;
+}
+
+.recipes-intro p{
+  margin:7px 0 0;
+  color:var(--ink-soft);
+  font-size:12.5px;
+  line-height:1.45;
+}
+
+.recipe-add-toggle{
+  width:100%;
+  margin-bottom:12px;
+  border:0;
+  border-radius:15px;
+  padding:13px 15px;
+  background:var(--plum);
+  color:#fff;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:var(--shadow);
+}
+
+.recipe-add-panel{
+  display:none;
+  margin-bottom:18px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:#fff;
+  box-shadow:var(--shadow-sm);
+}
+
+.recipe-add-panel.open{
+  display:block;
+}
+
+.recipe-add-panel input,
+.recipe-add-panel textarea{
+  width:100%;
+  margin-bottom:10px;
+  padding:12px 13px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#fbfafc;
+  color:var(--ink);
+  font:inherit;
+  resize:vertical;
+}
+
+.recipe-add-panel input:focus,
+.recipe-add-panel textarea:focus{
+  outline:0;
+  border-color:var(--lavender);
+  background:#fff;
+}
+
+.recipe-help{
+  margin:-2px 0 8px;
+  color:var(--ink-soft);
+  font-size:11.5px;
+  line-height:1.45;
+}
+
+.recipe-help code{
+  padding:2px 4px;
+  border-radius:5px;
+  background:var(--paper-dim);
+  color:var(--plum-dark);
+}
+
+.recipe-planned-option{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:2px 0 12px;
+  padding:11px 12px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#fff;
+  color:var(--ink-soft);
+  font-size:12.5px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.recipe-planned-option input{
+  width:18px;
+  height:18px;
+  margin:0;
+  accent-color:var(--plum);
+}
+
+.recipe-planned-option:has(input:checked){
+  border-color:var(--gold);
+  background:var(--gold-soft);
+  color:var(--plum-dark);
+}
+
+.shopping-section,
+.recipes-section{
+  margin:18px 0;
+}
+
+.shopping-heading,
+.recipes-heading{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.shopping-heading p{
+  margin:4px 0 0;
+  color:var(--ink-soft);
+  font-size:11.5px;
+}
+
+.shopping-clear-btn{
+  flex-shrink:0;
+  border:0;
+  border-radius:10px;
+  padding:8px 10px;
+  background:var(--paper-dim);
+  color:var(--plum-dark);
+  font:inherit;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.shopping-list{
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+  box-shadow:var(--shadow-sm);
+}
+
+.shopping-item{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:12px 13px;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+}
+
+.shopping-item:last-child{
+  border-bottom:0;
+}
+
+.shopping-checkbox{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  width:21px;
+  height:21px;
+  border:2px solid var(--line);
+  border-radius:7px;
+  color:transparent;
+  font-size:12px;
+  font-weight:800;
+}
+
+.shopping-item.checked .shopping-checkbox{
+  border-color:var(--gold);
+  background:var(--gold);
+  color:#fff;
+}
+
+.shopping-item.checked .shopping-name{
+  color:var(--ink-soft);
+  text-decoration:line-through;
+}
+
+.shopping-main{
+  min-width:0;
+  flex:1;
+}
+
+.shopping-name{
+  color:var(--ink);
+  font-size:13.5px;
+  font-weight:600;
+}
+
+.shopping-details{
+  margin-top:2px;
+  color:var(--ink-soft);
+  font-size:10.5px;
+  line-height:1.35;
+}
+
+.recipe-card{
+  margin-bottom:10px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+  box-shadow:var(--shadow-sm);
+}
+
+.recipe-card-top{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:14px 13px;
+}
+
+.recipe-plan-checkbox{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  width:22px;
+  height:22px;
+  margin-top:1px;
+  border:2px solid var(--line);
+  border-radius:7px;
+  color:transparent;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.recipe-plan-checkbox.planned{
+  border-color:var(--gold);
+  background:var(--gold);
+  color:#fff;
+}
+
+.recipe-main{
+  min-width:0;
+  flex:1;
+  cursor:pointer;
+}
+
+.recipe-name{
+  color:var(--ink);
+  font-size:14px;
+  font-weight:700;
+  line-height:1.35;
+}
+
+.recipe-note{
+  margin-top:3px;
+  color:var(--ink-soft);
+  font-size:11.5px;
+  line-height:1.4;
+}
+
+.recipe-ingredients-preview{
+  margin-top:5px;
+  color:var(--plum);
+  font-size:11px;
+  font-weight:600;
+}
+
+.recipe-delete-btn{
+  border:0;
+  background:none;
+  color:var(--ink-soft);
+  opacity:.55;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.recipe-detail{
+  display:none;
+  padding:0 13px 14px;
+}
+
+.recipe-card.open .recipe-detail{
+  display:block;
+}
+
+.recipe-detail textarea{
+  width:100%;
+  margin:8px 0;
+  padding:10px 11px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fbfafc;
+  color:var(--ink);
+  font:inherit;
+  font-size:12.5px;
+  resize:vertical;
+}
+
+.recipe-detail-actions{
+  display:flex;
+  gap:8px;
+}
+
+.recipe-detail-actions .btn{
+  flex:1;
+  padding:9px 10px;
+  font-size:12px;
+}
+
+.recipe-count{
+  padding:4px 8px;
+  border-radius:9px;
+  background:var(--paper-dim);
+  color:var(--ink-soft);
+  font-size:11px;
+  font-weight:700;
+}
+
+.recipe-empty{
+  padding:23px 14px;
+  border:1px dashed var(--line);
+  border-radius:17px;
+  background:#fff;
+  color:var(--ink-soft);
+  font-size:12.5px;
+  line-height:1.5;
+  text-align:center;
+}
+  
 </style>
 </head>
 <body>
@@ -912,6 +1258,103 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   <div class="wheel-stage" id="wheelStage"></div>
 </section>
 
+    <!-- RECETTES ET LISTE DE COURSES -->
+<section class="view" id="view-recipes">
+
+  <div class="recipes-intro">
+    <h2>🍳 À cuisiner</h2>
+    <p>
+      Gardez vos envies de recettes et préparez vos courses
+      sans oublier les ingrédients.
+    </p>
+  </div>
+
+  <button
+    class="recipe-add-toggle"
+    id="recipeAddToggleBtn"
+    type="button"
+  >
+    + Ajouter une recette
+  </button>
+
+  <div class="recipe-add-panel" id="recipeAddPanel">
+    <label class="field-label">Nom de la recette</label>
+
+    <input
+      type="text"
+      id="newRecipeName"
+      placeholder="Ex. Dahl de lentilles corail"
+    >
+
+    <label class="field-label">Petite note</label>
+
+    <textarea
+      id="newRecipeNote"
+      rows="2"
+      placeholder="Lien, idée, variante, personne qui cuisine…"
+    ></textarea>
+
+    <label class="field-label">
+      Ingrédients
+    </label>
+
+    <p class="recipe-help">
+      Un ingrédient par ligne. Vous pouvez écrire une quantité,
+      puis une barre verticale.
+      <br>
+      Exemple : <code>2 | courgettes</code>
+    </p>
+
+    <textarea
+      id="newRecipeIngredients"
+      rows="7"
+      placeholder="1 | oignon&#10;2 | courgettes&#10;200 g | lentilles corail&#10;1 boîte | lait de coco"
+    ></textarea>
+
+    <label class="recipe-planned-option">
+      <input type="checkbox" id="newRecipePlanned">
+      <span>🛒 À prévoir pour les courses</span>
+    </label>
+
+    <button
+      class="btn btn-primary btn-block"
+      id="submitRecipeBtn"
+      type="button"
+    >
+      Ajouter la recette
+    </button>
+  </div>
+
+  <section class="shopping-section">
+    <div class="shopping-heading">
+      <div>
+        <h2>🛒 Liste de courses</h2>
+        <p id="shoppingSummary"></p>
+      </div>
+
+      <button
+        type="button"
+        class="shopping-clear-btn"
+        id="clearShoppingChecksBtn"
+      >
+        Tout décocher
+      </button>
+    </div>
+
+    <div id="shoppingListContent"></div>
+  </section>
+
+  <section class="recipes-section">
+    <div class="recipes-heading">
+      <h2>Mes recettes</h2>
+
+      <span class="recipe-count" id="recipeCount"></span>
+    </div>
+
+    <div id="recipesContent"></div>
+  </section>
+</section>
+    
     <!-- HISTORIQUE -->
     <section class="view" id="view-history">
       <div id="historyContent" style="margin-top:14px;"></div>
@@ -920,11 +1363,67 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   </main>
 
   <nav>
-    <button class="nav-underline" id="navUnderline"></button>
-    <button class="nav-btn active" data-view="list" aria-label="Liste"><span class="ic"><svg class="nav-icon" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2.5"/><line x1="8" y1="8.5" x2="16" y2="8.5"/><line x1="8" y1="12.5" x2="16" y2="12.5"/><line x1="8" y1="16.5" x2="13" y2="16.5"/></svg></span>Liste</button>
-    <button class="nav-btn" data-view="wheel" aria-label="Tirage"><span class="ic"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg></span>Tirage</button>
-    <button class="nav-btn" data-view="history" aria-label="Activités faites"><span class="ic"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M20.5 11.2V12a8.5 8.5 0 1 1-5.05-7.77"/><path d="m20.5 4.5-8.5 8.5-3-3"/></svg></span>Fait</button>
-  </nav>
+  <button class="nav-underline" id="navUnderline"></button>
+
+  <button
+    class="nav-btn active"
+    data-view="list"
+    aria-label="Liste"
+  >
+    <span class="ic">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <rect x="4" y="3" width="16" height="18" rx="2.5"/>
+        <line x1="8" y1="8.5" x2="16" y2="8.5"/>
+        <line x1="8" y1="12.5" x2="16" y2="12.5"/>
+        <line x1="8" y1="16.5" x2="13" y2="16.5"/>
+      </svg>
+    </span>
+    Liste
+  </button>
+
+  <button
+    class="nav-btn"
+    data-view="wheel"
+    aria-label="Tirage"
+  >
+    <span class="ic">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/>
+      </svg>
+    </span>
+    Tirage
+  </button>
+
+  <button
+    class="nav-btn"
+    data-view="recipes"
+    aria-label="Recettes et courses"
+  >
+    <span class="ic">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <path d="M5 3h14v18H5z"/>
+        <path d="M8 7h8M8 11h8M8 15h5"/>
+        <path d="M18 18l2 2 3-4"/>
+      </svg>
+    </span>
+    Recettes
+  </button>
+
+  <button
+    class="nav-btn"
+    data-view="history"
+    aria-label="Activités faites"
+  >
+    <span class="ic">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <path d="M20.5 11.2V12a8.5 8.5 0 1 1-5.05-7.77"/>
+        <path d="m20.5 4.5-8.5 8.5-3-3"/>
+      </svg>
+    </span>
+    Fait
+  </button>
+</nav>
 
 </div>
 
@@ -1071,7 +1570,8 @@ const DEFAULT_SETTINGS = {
   splashTitle: 'Nos grands plans à nous',
   splashSubtitle: 'Rien que tout ça 🌿',
   splashImage: null,
-  categoryOrder: [],
+categoryOrder: [],
+shoppingChecked: {}
 itemOrders: {}
 };
 
@@ -1131,7 +1631,12 @@ const SEED_ITEMS = {
   ]
 };
 
-let STATE = { categories: [], items: [], settings: Object.assign({}, DEFAULT_SETTINGS) };
+let STATE = {
+  categories: [],
+  items: [],
+  recipes: [],
+  settings: Object.assign({}, DEFAULT_SETTINGS)
+};
 let currentListFilter = 'all';
 let selectedWheelCats = new Set();
 let currentSpinResult = null;
@@ -1493,7 +1998,79 @@ function readAndCompressImage(file, maxDim, quality){
     reader.readAsDataURL(file);
   });
 }
+/* ---------------- RECETTES : SUPABASE ---------------- */
 
+function dbRecipeToApp(row){
+  return {
+    id: row.id,
+    name: row.name,
+    note: row.note || '',
+    ingredients: Array.isArray(row.ingredients)
+      ? row.ingredients
+      : [],
+    planned: Boolean(row.planned),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  };
+}
+
+function appRecipeToDb(recipe){
+  return {
+    id: recipe.id,
+    name: recipe.name,
+    note: recipe.note || null,
+    ingredients: recipe.ingredients || [],
+    planned: Boolean(recipe.planned),
+    created_at: recipe.createdAt || todayISO(),
+    updated_at: todayISO()
+  };
+}
+
+async function loadRecipes(){
+  const { data, error } = await supabaseClient
+    .from('recipes')
+    .select('*')
+    .order('created_at', { ascending:false });
+
+  if(error) throw error;
+
+  STATE.recipes = (data || []).map(dbRecipeToApp);
+}
+
+async function insertRecipe(recipe){
+  const { data, error } = await supabaseClient
+    .from('recipes')
+    .insert(appRecipeToDb(recipe))
+    .select()
+    .single();
+
+  if(error) throw error;
+
+  return dbRecipeToApp(data);
+}
+
+async function updateRecipe(recipe){
+  const { data, error } = await supabaseClient
+    .from('recipes')
+    .update(appRecipeToDb(recipe))
+    .eq('id', recipe.id)
+    .select()
+    .single();
+
+  if(error) throw error;
+
+  return dbRecipeToApp(data);
+}
+
+async function removeRecipeFromDb(recipeId){
+  const { error } = await supabaseClient
+    .from('recipes')
+    .delete()
+    .eq('id', recipeId);
+
+  if(error) throw error;
+}
+  
 /* ---------------- HEADER / THEME ---------------- */
 function applyTheme(){
   // Design unique fixé dans le CSS.
@@ -2356,6 +2933,10 @@ function switchView(view){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
   positionUnderline(view);
   if(view==='wheel'){ renderWheelChips(); renderWheelStage(); }
+  if(view==='recipes'){
+  renderRecipes();
+  renderShoppingList();
+}
   if(view==='history') renderHistory();
 }
 function positionUnderline(view){
@@ -2684,6 +3265,574 @@ function setupCompactHeader(){
   /* Applique immédiatement le bon état, notamment au rechargement. */
   updateHeaderSize();
 }
+  /* ---------------- RECETTES ET COURSES ---------------- */
+
+function parseIngredients(rawText){
+  return rawText
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean)
+    .map(line => {
+      const parts = line.split('|');
+
+      if(parts.length >= 2){
+        return {
+          quantity: parts.shift().trim(),
+          name: parts.join('|').trim()
+        };
+      }
+
+      return {
+        quantity: '',
+        name: line
+      };
+    })
+    .filter(ingredient => ingredient.name);
+}
+
+function ingredientsToText(ingredients){
+  return (ingredients || [])
+    .map(ingredient =>
+      ingredient.quantity
+        ? `${ingredient.quantity} | ${ingredient.name}`
+        : ingredient.name
+    )
+    .join('\n');
+}
+
+function shoppingKey(ingredientName){
+  return ingredientName
+    .toLocaleLowerCase('fr-FR')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+function getShoppingItems(){
+  const grouped = new Map();
+
+  STATE.recipes
+    .filter(recipe => recipe.planned)
+    .forEach(recipe => {
+      (recipe.ingredients || []).forEach(ingredient => {
+        const name = ingredient.name.trim();
+
+        if(!name) return;
+
+        const key = shoppingKey(name);
+
+        if(!grouped.has(key)){
+          grouped.set(key, {
+            key,
+            name,
+            quantities: [],
+            recipes: []
+          });
+        }
+
+        const entry = grouped.get(key);
+
+        if(
+          ingredient.quantity &&
+          !entry.quantities.includes(ingredient.quantity)
+        ){
+          entry.quantities.push(ingredient.quantity);
+        }
+
+        if(!entry.recipes.includes(recipe.name)){
+          entry.recipes.push(recipe.name);
+        }
+      });
+    });
+
+  return [...grouped.values()].sort(
+    (first, second) =>
+      first.name.localeCompare(
+        second.name,
+        'fr',
+        { sensitivity:'base' }
+      )
+  );
+}
+
+async function toggleShoppingItem(key){
+  if(!STATE.settings.shoppingChecked){
+    STATE.settings.shoppingChecked = {};
+  }
+
+  STATE.settings.shoppingChecked[key] =
+    !Boolean(STATE.settings.shoppingChecked[key]);
+
+  try{
+    await persistSettings();
+    renderShoppingList();
+
+  }catch(error){
+    console.error(
+      'Erreur lors de la mise à jour de la liste de courses :',
+      error
+    );
+
+    alert(
+      'La liste de courses n’a pas pu être enregistrée.'
+    );
+  }
+}
+
+async function clearShoppingChecks(){
+  STATE.settings.shoppingChecked = {};
+
+  try{
+    await persistSettings();
+    renderShoppingList();
+
+  }catch(error){
+    console.error(
+      'Erreur lors de la remise à zéro des courses :',
+      error
+    );
+  }
+}
+
+async function addRecipe(){
+  const nameInput =
+    document.getElementById('newRecipeName');
+
+  const name = nameInput.value.trim();
+
+  if(!name) return;
+
+  const note =
+    document
+      .getElementById('newRecipeNote')
+      .value
+      .trim();
+
+  const ingredientsText =
+    document
+      .getElementById('newRecipeIngredients')
+      .value;
+
+  const planned =
+    document
+      .getElementById('newRecipePlanned')
+      .checked;
+
+  const recipe = {
+    id: uid('recipe'),
+    name,
+    note,
+    ingredients: parseIngredients(ingredientsText),
+    planned,
+    createdAt: todayISO()
+  };
+
+  try{
+    const savedRecipe = await insertRecipe(recipe);
+
+    STATE.recipes.unshift(savedRecipe);
+
+    nameInput.value = '';
+    document.getElementById('newRecipeNote').value = '';
+    document.getElementById('newRecipeIngredients').value = '';
+    document.getElementById('newRecipePlanned').checked = false;
+
+    document
+      .getElementById('recipeAddPanel')
+      .classList.remove('open');
+
+    renderRecipes();
+    renderShoppingList();
+
+  }catch(error){
+    console.error(
+      'Erreur lors de l’ajout de la recette :',
+      error
+    );
+
+    alert(
+      'La recette n’a pas pu être ajoutée.'
+    );
+  }
+}
+
+async function toggleRecipePlanned(recipeId){
+  const recipe = STATE.recipes.find(
+    entry => entry.id === recipeId
+  );
+
+  if(!recipe) return;
+
+  recipe.planned = !recipe.planned;
+
+  try{
+    const savedRecipe = await updateRecipe(recipe);
+
+    const index = STATE.recipes.findIndex(
+      entry => entry.id === recipeId
+    );
+
+    STATE.recipes[index] = savedRecipe;
+
+    renderRecipes();
+    renderShoppingList();
+
+  }catch(error){
+    console.error(
+      'Erreur lors de la mise à jour de la recette :',
+      error
+    );
+
+    await loadRecipes();
+    renderRecipes();
+    renderShoppingList();
+  }
+}
+
+async function saveRecipeDetails(recipeId){
+  const recipe = STATE.recipes.find(
+    entry => entry.id === recipeId
+  );
+
+  if(!recipe) return;
+
+  const noteInput = document.querySelector(
+    `[data-recipe-note="${recipeId}"]`
+  );
+
+  const ingredientsInput = document.querySelector(
+    `[data-recipe-ingredients="${recipeId}"]`
+  );
+
+  if(!noteInput || !ingredientsInput) return;
+
+  recipe.note = noteInput.value.trim();
+  recipe.ingredients = parseIngredients(
+    ingredientsInput.value
+  );
+
+  try{
+    const savedRecipe = await updateRecipe(recipe);
+
+    const index = STATE.recipes.findIndex(
+      entry => entry.id === recipeId
+    );
+
+    STATE.recipes[index] = savedRecipe;
+
+    renderRecipes();
+    renderShoppingList();
+
+  }catch(error){
+    console.error(
+      'Erreur lors de la sauvegarde de la recette :',
+      error
+    );
+
+    alert(
+      'La recette n’a pas pu être sauvegardée.'
+    );
+  }
+}
+
+async function deleteRecipe(recipeId){
+  const recipe = STATE.recipes.find(
+    entry => entry.id === recipeId
+  );
+
+  if(!recipe) return;
+
+  const confirmed = confirm(
+    `Supprimer définitivement « ${recipe.name} » ?`
+  );
+
+  if(!confirmed) return;
+
+  try{
+    await removeRecipeFromDb(recipeId);
+
+    STATE.recipes = STATE.recipes.filter(
+      entry => entry.id !== recipeId
+    );
+
+    renderRecipes();
+    renderShoppingList();
+
+  }catch(error){
+    console.error(
+      'Erreur lors de la suppression de la recette :',
+      error
+    );
+
+    alert(
+      'La recette n’a pas pu être supprimée.'
+    );
+  }
+}
+
+function renderShoppingList(){
+  const container =
+    document.getElementById('shoppingListContent');
+
+  const summary =
+    document.getElementById('shoppingSummary');
+
+  const shoppingItems = getShoppingItems();
+
+  const checked =
+    STATE.settings.shoppingChecked || {};
+
+  const checkedCount = shoppingItems.filter(
+    item => Boolean(checked[item.key])
+  ).length;
+
+  if(shoppingItems.length === 0){
+    summary.textContent = 'Aucune course à prévoir.';
+
+    container.innerHTML = `
+      <div class="recipe-empty">
+        Cochez une recette avec « À prévoir pour les courses »
+        pour générer automatiquement votre liste.
+      </div>
+    `;
+
+    return;
+  }
+
+  summary.textContent =
+    `${checkedCount}/${shoppingItems.length} article` +
+    `${shoppingItems.length > 1 ? 's' : ''} acheté` +
+    `${checkedCount > 1 ? 's' : ''}`;
+
+  container.innerHTML = `
+    <div class="shopping-list">
+      ${shoppingItems.map(item => {
+        const isChecked = Boolean(checked[item.key]);
+
+        const quantityText = item.quantities.length
+          ? item.quantities.join(' + ')
+          : 'Quantité à choisir';
+
+        return `
+          <div
+            class="shopping-item ${isChecked ? 'checked' : ''}"
+            data-shopping-key="${escapeHtml(item.key)}"
+          >
+            <span class="shopping-checkbox">✓</span>
+
+            <div class="shopping-main">
+              <div class="shopping-name">
+                ${escapeHtml(item.name)}
+              </div>
+
+              <div class="shopping-details">
+                ${escapeHtml(quantityText)}
+                · ${escapeHtml(item.recipes.join(', '))}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  container
+    .querySelectorAll('[data-shopping-key]')
+    .forEach(element => {
+      element.addEventListener('click', () => {
+        toggleShoppingItem(
+          element.dataset.shoppingKey
+        );
+      });
+    });
+}
+
+function renderRecipes(){
+  const container =
+    document.getElementById('recipesContent');
+
+  const count =
+    document.getElementById('recipeCount');
+
+  const recipes = [...STATE.recipes].sort(
+    (first, second) =>
+      first.name.localeCompare(
+        second.name,
+        'fr',
+        { sensitivity:'base' }
+      )
+  );
+
+  count.textContent =
+    `${recipes.length} recette` +
+    `${recipes.length > 1 ? 's' : ''}`;
+
+  if(recipes.length === 0){
+    container.innerHTML = `
+      <div class="recipe-empty">
+        Votre future liste de recettes commence ici.
+        <br>
+        Ajoutez une première envie à cuisiner. 🍝
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML = recipes.map(recipe => {
+    const ingredientCount =
+      recipe.ingredients.length;
+
+    return `
+      <article
+        class="recipe-card"
+        data-recipe-id="${recipe.id}"
+      >
+        <div class="recipe-card-top">
+          <button
+            type="button"
+            class="recipe-plan-checkbox ${
+              recipe.planned ? 'planned' : ''
+            }"
+            data-action="toggle-recipe-plan"
+            data-recipe-id="${recipe.id}"
+            title="Ajouter ou retirer des courses"
+          >
+            ✓
+          </button>
+
+          <div
+            class="recipe-main"
+            data-action="toggle-recipe-detail"
+            data-recipe-id="${recipe.id}"
+          >
+            <div class="recipe-name">
+              ${escapeHtml(recipe.name)}
+            </div>
+
+            ${
+              recipe.note
+                ? `
+                  <div class="recipe-note">
+                    ${escapeHtml(recipe.note)}
+                  </div>
+                `
+                : ''
+            }
+
+            <div class="recipe-ingredients-preview">
+              ${ingredientCount} ingrédient${
+                ingredientCount > 1 ? 's' : ''
+              }
+              ${
+                recipe.planned
+                  ? ' · 🛒 Courses prévues'
+                  : ''
+              }
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="recipe-delete-btn"
+            data-action="delete-recipe"
+            data-recipe-id="${recipe.id}"
+            title="Supprimer"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="recipe-detail">
+          <label class="field-label">Note</label>
+
+          <textarea
+            rows="2"
+            data-recipe-note="${recipe.id}"
+          >${escapeHtml(recipe.note || '')}</textarea>
+
+          <label class="field-label">
+            Ingrédients
+          </label>
+
+          <textarea
+            rows="6"
+            data-recipe-ingredients="${recipe.id}"
+          >${escapeHtml(
+            ingredientsToText(recipe.ingredients)
+          )}</textarea>
+
+          <div class="recipe-detail-actions">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-action="save-recipe"
+              data-recipe-id="${recipe.id}"
+            >
+              Enregistrer
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-ghost"
+              data-action="close-recipe"
+              data-recipe-id="${recipe.id}"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  container
+    .querySelectorAll('[data-action="toggle-recipe-plan"]')
+    .forEach(button => {
+      button.addEventListener('click', event => {
+        event.stopPropagation();
+
+        toggleRecipePlanned(
+          button.dataset.recipeId
+        );
+      });
+    });
+
+  container
+    .querySelectorAll('[data-action="toggle-recipe-detail"]')
+    .forEach(element => {
+      element.addEventListener('click', () => {
+        const card = element.closest('.recipe-card');
+
+        card.classList.toggle('open');
+      });
+    });
+
+  container
+    .querySelectorAll('[data-action="delete-recipe"]')
+    .forEach(button => {
+      button.addEventListener('click', () => {
+        deleteRecipe(button.dataset.recipeId);
+      });
+    });
+
+  container
+    .querySelectorAll('[data-action="save-recipe"]')
+    .forEach(button => {
+      button.addEventListener('click', () => {
+        saveRecipeDetails(button.dataset.recipeId);
+      });
+    });
+
+  container
+    .querySelectorAll('[data-action="close-recipe"]')
+    .forEach(button => {
+      button.addEventListener('click', () => {
+        button
+          .closest('.recipe-card')
+          .classList.remove('open');
+      });
+    });
+}
   
 /* ---------------- MASTER RENDER ---------------- */
 function renderAll(){
@@ -2697,13 +3846,22 @@ if(document.getElementById('view-wheel').classList.contains('active')){
   renderWheelChips();
   renderWheelStage();
 }
-  if(document.getElementById('view-history').classList.contains('active')) renderHistory();
+
+if(document.getElementById('view-recipes').classList.contains('active')){
+  renderRecipes();
+  renderShoppingList();
 }
+
+if(document.getElementById('view-history').classList.contains('active')){
+  renderHistory();
+}
+  }
 
 /* ---------------- INIT & EVENTS ---------------- */
 async function init(){
   try{
     await loadData();
+    await loadRecipes();
 
 selectedWheelCats = new Set(
   STATE.categories.map(category => category.id)
@@ -2783,7 +3941,22 @@ updateLazyModeInterface();
     renderWheelChips();
     renderWheelStage();
   });
+document
+  .getElementById('recipeAddToggleBtn')
+  .addEventListener('click', () => {
+    document
+      .getElementById('recipeAddPanel')
+      .classList.toggle('open');
+  });
 
+document
+  .getElementById('submitRecipeBtn')
+  .addEventListener('click', addRecipe);
+
+document
+  .getElementById('clearShoppingChecksBtn')
+  .addEventListener('click', clearShoppingChecks);
+  
 document.getElementById('refreshBtn').addEventListener('click', async ()=>{
   const btn = document.getElementById('refreshBtn');
 
