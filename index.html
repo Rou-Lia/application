@@ -704,6 +704,83 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   background:var(--gold-soft);
   border-color:var(--gold);
 }
+
+  /* ===== MODE FLEMME ===== */
+
+.lazy-option{
+  display:flex;
+  align-items:center;
+  gap:9px;
+
+  margin:2px 0 12px;
+  padding:10px 12px;
+
+  border:1px solid var(--line);
+  border-radius:13px;
+
+  background:#fff;
+  color:var(--ink-soft);
+
+  font-size:12.5px;
+  font-weight:600;
+
+  cursor:pointer;
+}
+
+.lazy-option input{
+  width:18px;
+  height:18px;
+  margin:0;
+
+  accent-color:var(--plum);
+  cursor:pointer;
+}
+
+.lazy-option:has(input:checked){
+  background:var(--gold-soft);
+  border-color:var(--gold);
+  color:var(--plum-dark);
+}
+
+.wheel-lazy-btn{
+  width:100%;
+  margin:4px 0 10px;
+
+  border:1px solid var(--line);
+  border-radius:14px;
+
+  padding:11px 13px;
+
+  background:#fff;
+  color:var(--plum-dark);
+
+  font-family:inherit;
+  font-size:13px;
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+.wheel-lazy-btn.active{
+  border-color:var(--gold);
+  background:var(--gold-soft);
+  color:var(--plum-dark);
+}
+
+.wheel-lazy-message{
+  margin:0 0 10px;
+  padding:10px 12px;
+
+  border-radius:12px;
+
+  background:var(--gold-soft);
+  color:var(--plum-dark);
+
+  font-size:12.5px;
+  line-height:1.45;
+  font-weight:600;
+}
+  
 </style>
 </head>
 <body>
@@ -751,6 +828,16 @@ header.has-photo{background-size:cover!important;background-position:center!impo
       <div class="add-panel" id="addPanel">
         <input type="text" id="newItemName" placeholder="Ton idée… (ex: Aller voir Dune 3)">
         <textarea id="newItemNote" rows="2" placeholder="Une note (optionnel) : lien, contrainte, idée précise…"></textarea>
+        <label class="lazy-option">
+  <input
+    type="checkbox"
+    id="newItemLazy"
+  >
+
+  <span>
+    🛋️ Compatible flemme / plaid
+  </span>
+</label>
         <div class="photo-row">
           <div class="photo-preview small" id="newItemPhotoPreview">📷</div>
           <div class="photo-buttons">
@@ -847,6 +934,16 @@ header.has-photo{background-size:cover!important;background-position:center!impo
     <h2 id="detailName"></h2>
     <label class="field-label">Note</label>
     <textarea id="detailNoteInput" rows="3" placeholder="Ajoute une note (lien, idée, contrainte…)"></textarea>
+    <label class="lazy-option">
+  <input
+    type="checkbox"
+    id="detailLazyInput"
+  >
+
+  <span>
+    🛋️ Compatible flemme/plaid 🌙
+  </span>
+</label>
     <div class="photo-row">
       <label class="btn btn-ghost btn-sm" for="detailPhotoInput">Changer la photo</label>
       <input type="file" accept="image/*" id="detailPhotoInput" hidden>
@@ -1024,6 +1121,7 @@ let selectedWheelCats = new Set();
 let currentSpinResult = null;
 let wheelRotation = 0;
 let currentWheelItems = [];
+  let lazyModeEnabled = false;
 let pendingNewItemImage = null;
 let currentDetailId = null;
 let detailImageState = null;
@@ -1061,7 +1159,8 @@ function dbItemToApp(row){
     note: row.note || null,
     image: row.image || null,
     done: Boolean(row.done),
-    addedAt: row.added_at,
+lazy: Boolean(row.lazy),
+addedAt: row.added_at,
     doneAt: row.done_at || null,
     version: row.version || 1
   };
@@ -1075,7 +1174,8 @@ function appItemToDb(item){
     note: item.note || null,
     image: item.image || null,
     done: Boolean(item.done),
-    added_at: item.addedAt || todayISO(),
+lazy: Boolean(item.lazy),
+added_at: item.addedAt || todayISO(),
     done_at: item.doneAt || null,
     version: item.version || 1,
     updated_at: todayISO()
@@ -1648,7 +1748,7 @@ async function deleteItem(id){
   }
 }
 
-async function addItem(name, categoryId, note, image){
+async function addItem(name, categoryId, note, image, lazy = false){
   const newItem = {
     id: uid('u'),
     categoryId,
@@ -1656,7 +1756,8 @@ async function addItem(name, categoryId, note, image){
     note: note || null,
     image: image || null,
     done: false,
-    addedAt: todayISO(),
+lazy: Boolean(lazy),
+addedAt: todayISO(),
     doneAt: null,
     version: 1
   };
@@ -1708,6 +1809,8 @@ function openDetail(id){
   document.getElementById('detailCat').textContent = cat ? cat.emoji + ' ' + cat.label : '';
   document.getElementById('detailName').textContent = it.name;
   document.getElementById('detailNoteInput').value = it.note || '';
+  document.getElementById('detailLazyInput').checked =
+  Boolean(it.lazy);
   renderDetailImage(detailImageState);
   document.getElementById('detailOverlay').classList.add('open');
 }
@@ -1715,8 +1818,16 @@ async function saveDetail(){
   const item = STATE.items.find(i => i.id === currentDetailId);
   if(!item) return;
 
-  item.note = document.getElementById('detailNoteInput').value.trim() || null;
-  item.image = detailImageState;
+  item.note =
+  document.getElementById('detailNoteInput')
+    .value
+    .trim() || null;
+
+item.lazy =
+  document.getElementById('detailLazyInput')
+    .checked;
+
+item.image = detailImageState;
 
   try{
     const saved = await updateItem(item);
@@ -1757,12 +1868,82 @@ function renderHistory(){
 /* ---------------- WHEEL MULTI-CATÉGORIES ---------------- */
 
 function getSelectedWheelItems(){
+  /*
+   * Mode normal :
+   * les idées des catégories sélectionnées sont proposées.
+   */
+  if(!lazyModeEnabled){
+    return STATE.items.filter(item =>
+      !item.done &&
+      selectedWheelCats.has(item.categoryId)
+    );
+  }
+
+  /*
+   * Mode flemme :
+   * - Films, Documentaires et Séries sont toujours inclus ;
+   * - toute idée cochée « Compatible flemme/plaid » est incluse,
+   *   quelle que soit sa catégorie.
+   */
+  const requiredCategoryIds = new Set([
+    'films',
+    'docs',
+    'series'
+  ]);
+
   return STATE.items.filter(item =>
     !item.done &&
-    selectedWheelCats.has(item.categoryId)
+    (
+      requiredCategoryIds.has(item.categoryId) ||
+      Boolean(item.lazy)
+    )
   );
 }
+function updateLazyModeInterface(){
+  const button = document.getElementById('lazyModeBtn');
+  const message = document.getElementById('lazyModeMessage');
 
+  if(!button || !message) return;
+
+  button.classList.toggle(
+    'active',
+    lazyModeEnabled
+  );
+
+  button.textContent = lazyModeEnabled
+    ? '🛋️ Désactiver le mode flemme'
+    : '🛋️ Activer le mode flemme';
+
+  message.hidden = !lazyModeEnabled;
+}
+
+function toggleLazyMode(){
+  lazyModeEnabled = !lazyModeEnabled;
+
+  /*
+   * À l'activation, les catégories de contenu calme
+   * sont visuellement sélectionnées si elles existent.
+   */
+  if(lazyModeEnabled){
+    const requiredCategoryIds = [
+      'films',
+      'docs',
+      'series'
+    ];
+
+    requiredCategoryIds.forEach(categoryId => {
+      if(getCategory(categoryId)){
+        selectedWheelCats.add(categoryId);
+      }
+    });
+  }
+
+  wheelRotation = 0;
+
+  updateLazyModeInterface();
+  renderWheelChips();
+  renderWheelStage();
+}
 function cleanWheelSelection(){
   const validCategoryIds = new Set(
     STATE.categories.map(category => category.id)
@@ -1835,16 +2016,32 @@ function renderWheelChips(){
   const selectedCategoriesCount = selectedWheelCats.size;
   const selectedItemsCount = getSelectedWheelItems().length;
 
-  if(selectedCategoriesCount === 0){
-    summary.textContent = 'Aucune catégorie sélectionnée.';
-  }else{
-    summary.textContent =
-      `${selectedCategoriesCount} catégorie` +
-      `${selectedCategoriesCount > 1 ? 's' : ''} sélectionnée` +
-      `${selectedCategoriesCount > 1 ? 's' : ''} · ` +
-      `${selectedItemsCount} idée` +
-      `${selectedItemsCount > 1 ? 's' : ''} dans le tirage`;
-  }
+  if(lazyModeEnabled){
+  const lazyItemsCount =
+    STATE.items.filter(item =>
+      !item.done &&
+      Boolean(item.lazy)
+    ).length;
+
+  summary.textContent =
+    `${selectedItemsCount} idée` +
+    `${selectedItemsCount > 1 ? 's' : ''} recommandée` +
+    `${selectedItemsCount > 1 ? 's' : ''} · ` +
+    `Films, Documentaires, Séries` +
+    `${lazyItemsCount > 0 ? ' et idées flemme' : ''}`;
+
+}else if(selectedCategoriesCount === 0){
+  summary.textContent =
+    'Aucune catégorie sélectionnée.';
+
+}else{
+  summary.textContent =
+    `${selectedCategoriesCount} catégorie` +
+    `${selectedCategoriesCount > 1 ? 's' : ''} sélectionnée` +
+    `${selectedCategoriesCount > 1 ? 's' : ''} · ` +
+    `${selectedItemsCount} idée` +
+    `${selectedItemsCount > 1 ? 's' : ''} dans le tirage`;
+}
 }
 
 function polarToCartesian(cx, cy, radius, angleDeg){
@@ -2550,6 +2747,11 @@ document
   });
 
 document
+  .getElementById('lazyModeBtn')
+  .addEventListener('click', toggleLazyMode);
+
+updateLazyModeInterface();
+  document
   .getElementById('clearWheelCatsBtn')
   .addEventListener('click', () => {
     selectedWheelCats.clear();
@@ -2593,10 +2795,26 @@ document.getElementById('refreshBtn').addEventListener('click', async ()=>{
     const name = nameInput.value.trim();
     if(!name) return;
     const catId = document.getElementById('newItemCat').value;
-    const note = document.getElementById('newItemNote').value.trim();
-    await addItem(name, catId, note, pendingNewItemImage);
+
+const note =
+  document.getElementById('newItemNote')
+    .value
+    .trim();
+
+const lazy =
+  document.getElementById('newItemLazy')
+    .checked;
+
+await addItem(
+  name,
+  catId,
+  note,
+  pendingNewItemImage,
+  lazy
+);
     nameInput.value = '';
     document.getElementById('newItemNote').value = '';
+    document.getElementById('newItemLazy').checked = false;
     pendingNewItemImage = null;
     document.getElementById('newItemPhotoPreview').innerHTML = '📷';
     document.getElementById('removeNewItemPhotoBtn').style.display = 'none';
