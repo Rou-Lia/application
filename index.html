@@ -559,26 +559,69 @@ h1,.cat-heading,.spin-btn,.result-card h2,.love-overlay h2{font-family:var(--app
 header.has-photo{background-size:cover!important;background-position:center!important}header.has-photo::after{display:none!important}
 .nav-btn .ic{height:22px;display:flex;align-items:center;justify-content:center;font-size:0}.nav-icon{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
-  /* ===== EN-TÊTE COMPACT AU DÉFILEMENT ===== */
-header{
-  transition:min-height .25s ease, padding .25s ease, border-radius .25s ease;
-}
-header.compact{
-  min-height:0;
-  padding:12px 20px 12px;
-  border-radius:0 0 18px 18px;
-}
-header.compact h1{ font-size:18px; line-height:1.2; }
-header.compact .swash,
-header.compact .stats-row{ display:none; }
-header.compact::after{ display:none; }
-header.compact .icon-btn{ width:34px; height:34px; font-size:14px; }
+/* ===== EN-TÊTE COMPACT AU DÉFILEMENT ===== */
 
-/* En-tête initial plus bas sur téléphone */
-@media (max-width:480px){
-  header{ min-height:auto; padding:20px 20px 16px; }
-  h1{ font-size:23px; }
-  .stats-row{ margin-top:12px; }
+/*
+ * Le bandeau reste visible pendant le défilement.
+ * Il est plus petit dès l'ouverture, puis se compacte davantage.
+ */
+#siteHeader{
+  position:sticky;
+  top:0;
+  z-index:50;
+
+  min-height:0 !important;
+  padding:16px 20px 13px !important;
+
+  transition:
+    padding .25s ease,
+    border-radius .25s ease,
+    box-shadow .25s ease;
+}
+
+/* Taille de départ plus réduite */
+#siteHeader h1{
+  font-size:22px;
+  line-height:1.12;
+}
+
+#siteHeader .swash{
+  width:50px;
+  margin-top:6px;
+}
+
+#siteHeader .stats-row{
+  margin-top:10px;
+  padding:7px 10px;
+  font-size:11.5px;
+}
+
+/* Version compacte après défilement */
+#siteHeader.compact{
+  padding:9px 16px 9px !important;
+  border-radius:0 0 16px 16px;
+  box-shadow:0 7px 16px rgba(57,43,67,.12);
+}
+
+#siteHeader.compact h1{
+  font-size:17px;
+  line-height:1.15;
+}
+
+#siteHeader.compact .swash,
+#siteHeader.compact .stats-row{
+  display:none;
+}
+
+#siteHeader.compact::after{
+  display:none;
+}
+
+#siteHeader.compact .icon-btn{
+  width:32px;
+  height:32px;
+  border-radius:11px;
+  font-size:13px;
 }
 
 /* ===== GESTION DE L'ORDRE DES CATÉGORIES ===== */
@@ -615,7 +658,52 @@ header.compact .icon-btn{ width:34px; height:34px; font-size:14px; }
   cursor:pointer;
 }
 .cat-sort-btn:active{ transform:scale(.97); }
-  
+
+  /* ===== TRI DES ACTIVITÉS DANS CHAQUE CATÉGORIE ===== */
+
+.cat-heading{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.cat-heading-title{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.cat-heading .n{
+  margin-left:auto;
+}
+
+.item-sort-btn{
+  flex-shrink:0;
+
+  border:1px solid var(--line);
+  border-radius:9px;
+
+  padding:5px 7px;
+
+  background:#fff;
+  color:var(--plum-dark);
+
+  font-family:inherit;
+  font-size:10px;
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+.item-sort-btn:active{
+  transform:scale(.95);
+}
+
+.item-sort-btn.sorted{
+  background:var(--gold-soft);
+  border-color:var(--gold);
+}
 </style>
 </head>
 <body>
@@ -868,9 +956,10 @@ const FONT_OPTIONS = [
 const DEFAULT_SETTINGS = {
   title: "On fait quoi\naujourd'hui ?", headerPhoto: null, themeId: 'plum-gold', fontId: 'inter',
   splashTitle: 'Nos grands plans à nous',
-  splashSubtitle: 'Nos projets, nos envies et nos petits bonheurs. 🌿',
+  splashSubtitle: 'Rien que tout ça 🌿',
   splashImage: null,
-  categoryOrder: []
+  categoryOrder: [],
+itemOrders: {}
 };
 
 const SEED_CATEGORIES = [
@@ -1352,7 +1441,87 @@ function renderChips(){
 }
 
 /* ---------------- LIST ---------------- */
-function renderList(){
+/* ---------------- TRI DES ACTIVITÉS PAR CATÉGORIE ---------------- */
+
+/*
+ * Renvoie les activités actives de la catégorie, dans l'ordre
+ * manuellement enregistré dans STATE.settings.itemOrders.
+ */
+function getOrderedActiveItems(categoryId){
+  const items = activeItems(categoryId);
+
+  const itemOrders =
+    STATE.settings.itemOrders || {};
+
+  const savedOrder =
+    Array.isArray(itemOrders[categoryId])
+      ? itemOrders[categoryId]
+      : [];
+
+  return [...items].sort((first, second) => {
+    const firstIndex = savedOrder.indexOf(first.id);
+    const secondIndex = savedOrder.indexOf(second.id);
+
+    const safeFirst =
+      firstIndex === -1
+        ? Number.MAX_SAFE_INTEGER
+        : firstIndex;
+
+    const safeSecond =
+      secondIndex === -1
+        ? Number.MAX_SAFE_INTEGER
+        : secondIndex;
+
+    if(safeFirst !== safeSecond){
+      return safeFirst - safeSecond;
+    }
+
+    return first.name.localeCompare(
+      second.name,
+      'fr',
+      { sensitivity:'base' }
+    );
+  });
+}
+
+/*
+ * Classe toutes les activités actives d'une catégorie de A à Z,
+ * puis enregistre l'ordre dans les réglages partagés.
+ */
+async function sortItemsAlphabetically(categoryId){
+  const items = activeItems(categoryId).sort(
+    (first, second) =>
+      first.name.localeCompare(
+        second.name,
+        'fr',
+        { sensitivity:'base' }
+      )
+  );
+
+  if(!STATE.settings.itemOrders){
+    STATE.settings.itemOrders = {};
+  }
+
+  STATE.settings.itemOrders[categoryId] =
+    items.map(item => item.id);
+
+  try{
+    await persistSettings();
+
+    renderList();
+
+  }catch(error){
+    console.error(
+      "Erreur d'enregistrement du tri des activités :",
+      error
+    );
+
+    alert(
+      "Le tri des activités n'a pas pu être enregistré."
+    );
+  }
+}
+  function renderList(){
   const container = document.getElementById('listContent');
   const query = (document.getElementById('searchInput').value || '').trim().toLowerCase();
   const cats = currentListFilter==='all' ? STATE.categories : STATE.categories.filter(c=>c.id===currentListFilter);
@@ -1361,12 +1530,39 @@ function renderList(){
   let totalShown = 0;
 
   cats.forEach(cat=>{
-    let items = activeItems(cat.id);
-    if(query) items = items.filter(it=>it.name.toLowerCase().includes(query));
+  let items = getOrderedActiveItems(cat.id);
+
+  if(query){
+    items = items.filter(item =>
+      item.name.toLowerCase().includes(query)
+    );
+  }
     if(items.length===0) return;
     totalShown += items.length;
-    html += `<div class="cat-section">
-      <div class="cat-heading" style="border-color:${cat.color}">${cat.emoji} ${escapeHtml(cat.label)}<span class="n">${items.length}</span></div>`;
+    html += `
+  <div class="cat-section">
+
+    <div
+      class="cat-heading"
+      style="border-color:${cat.color}"
+    >
+      <span class="cat-heading-title">
+        ${cat.emoji} ${escapeHtml(cat.label)}
+      </span>
+
+      <span class="n">${items.length}</span>
+
+      <button
+        type="button"
+        class="item-sort-btn"
+        data-action="sort-items"
+        data-category-id="${cat.id}"
+        title="Classer les activités de cette catégorie par ordre alphabétique"
+      >
+        A→Z
+      </button>
+    </div>
+`;
     items.forEach(it=>{
       html += `<div class="item-row" data-id="${it.id}">
         <div class="checkbox" data-action="toggle" data-id="${it.id}">✓</div>
@@ -1389,6 +1585,15 @@ function renderList(){
   container.querySelectorAll('[data-action="toggle"]').forEach(el=> el.addEventListener('click', ()=> toggleDone(el.dataset.id)));
   container.querySelectorAll('[data-action="delete"]').forEach(el=> el.addEventListener('click', ()=> deleteItem(el.dataset.id)));
   container.querySelectorAll('[data-action="detail"]').forEach(el=> el.addEventListener('click', ()=> openDetail(el.dataset.id)));
+    container
+  .querySelectorAll('[data-action="sort-items"]')
+  .forEach(button => {
+    button.addEventListener('click', () => {
+      sortItemsAlphabetically(
+        button.dataset.categoryId
+      );
+    });
+  });
 }
 
 async function toggleDone(id){
@@ -2236,22 +2441,37 @@ async function moveCategory(categoryId, direction){
 /* ---------------- EN-TÊTE COMPACT AU DÉFILEMENT ---------------- */
 
 function setupCompactHeader(){
-  const scroller = document.querySelector('main');
   const header = document.getElementById('siteHeader');
 
-  if(!scroller || !header) return;
+  if(!header) return;
 
-  scroller.addEventListener(
+  function updateHeaderSize(){
+    /*
+     * Le défilement est effectué par la page entière,
+     * et non nécessairement par l'élément <main>.
+     */
+    const scrollPosition =
+      window.scrollY ||
+      document.documentElement.scrollTop ||
+      document.body.scrollTop ||
+      0;
+
+    header.classList.toggle(
+      'compact',
+      scrollPosition > 35
+    );
+  }
+
+  window.addEventListener(
     'scroll',
-    () => {
-      header.classList.toggle(
-        'compact',
-        scroller.scrollTop > 40
-      );
-    },
-    { passive: true }
+    updateHeaderSize,
+    { passive:true }
   );
+
+  /* Applique immédiatement le bon état, notamment au rechargement. */
+  updateHeaderSize();
 }
+  
 /* ---------------- MASTER RENDER ---------------- */
 function renderAll(){
   renderSplashScreen();
