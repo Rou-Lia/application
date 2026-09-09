@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
 <title>Nos grands plans</title>
-<link rel="preconnect" href="<nav>://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/confetti.browser.min.js"></script>
@@ -1571,7 +1571,7 @@ const DEFAULT_SETTINGS = {
   splashSubtitle: 'Rien que tout ça 🌿',
   splashImage: null,
 categoryOrder: [],
-shoppingChecked: {}
+shoppingChecked: {},
 itemOrders: {}
 };
 
@@ -3860,8 +3860,23 @@ if(document.getElementById('view-history').classList.contains('active')){
 /* ---------------- INIT & EVENTS ---------------- */
 async function init(){
   try{
-    await loadData();
-    await loadRecipes();
+await loadData();
+
+try{
+  await loadRecipes();
+
+}catch(error){
+  console.error(
+    'Les recettes n’ont pas pu être chargées :',
+    error
+  );
+
+  /*
+   * L’application principale peut continuer à fonctionner
+   * même si la table recipes est absente ou inaccessible.
+   */
+  STATE.recipes = [];
+}
 
 selectedWheelCats = new Set(
   STATE.categories.map(category => category.id)
