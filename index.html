@@ -868,6 +868,22 @@ header.has-photo{background-size:cover!important;background-position:center!impo
     Sélectionne une ou plusieurs catégories, puis lance la roue
   </p>
 
+  <button
+    type="button"
+    class="wheel-lazy-btn"
+    id="lazyModeBtn"
+  >
+    🛋️ Activer le mode flemme
+  </button>
+
+  <p
+    class="wheel-lazy-message"
+    id="lazyModeMessage"
+    hidden
+  >
+    Mode flemme activé : seules les activités compatibles avec un plaid sont recommandées.
+  </p>
+
   <div class="wheel-selection-actions">
     <button
       type="button"
@@ -2746,11 +2762,18 @@ document
     renderWheelStage();
   });
 
-document
-  .getElementById('lazyModeBtn')
-  .addEventListener('click', toggleLazyMode);
+const lazyModeButton = document.getElementById('lazyModeBtn');
+
+if(lazyModeButton){
+  lazyModeButton.addEventListener('click', toggleLazyMode);
+}else{
+  console.warn(
+    "Bouton 'lazyModeBtn' introuvable : le mode flemme est inactif."
+  );
+}
 
 updateLazyModeInterface();
+  
   document
   .getElementById('clearWheelCatsBtn')
   .addEventListener('click', () => {
