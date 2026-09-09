@@ -2129,7 +2129,7 @@ function renderSplashScreen(){
   document.getElementById('splashImageContainer').innerHTML=settings.splashImage ? `<img class="splash-hero-image" src="${settings.splashImage}" alt="Photo de bienvenue">` : '<span class="splash-plant" aria-hidden="true">🪴</span>';
 }
 
-  /* ---------------- ORDRE DES CATÉGORIES ---------------- */
+/* ---------------- ORDRE DES CATÉGORIES ---------------- */
 
 /*
  * L'ordre choisi est enregistré dans les réglages partagés,
@@ -2137,8 +2137,121 @@ function renderSplashScreen(){
  */
 function applyCategoryOrder(){
   const savedOrder = Array.isArray(STATE.settings.categoryOrder)
-    ? STATE.settings.
-    
+    ? STATE.settings.categoryOrder
+    : [];
+
+  if(savedOrder.length === 0) return;
+
+  STATE.categories.sort((first, second) => {
+    const firstIndex = savedOrder.indexOf(first.id);
+    const secondIndex = savedOrder.indexOf(second.id);
+
+    /*
+     * Une catégorie absente de l'ordre enregistré est placée
+     * après les catégories connues.
+     */
+    const safeFirst =
+      firstIndex === -1
+        ? Number.MAX_SAFE_INTEGER
+        : firstIndex;
+
+    const safeSecond =
+      secondIndex === -1
+        ? Number.MAX_SAFE_INTEGER
+        : secondIndex;
+
+    if(safeFirst !== safeSecond){
+      return safeFirst - safeSecond;
+    }
+
+    return first.label.localeCompare(second.label, 'fr');
+  });
+}
+
+async function saveCategoryOrder(){
+  STATE.settings.categoryOrder =
+    STATE.categories.map(category => category.id);
+
+  try{
+    await persistSettings();
+
+  }catch(error){
+    console.error(
+      "Erreur d'enregistrement de l'ordre :",
+      error
+    );
+
+    alert(
+      "L'ordre des catégories n'a pas pu être enregistré."
+    );
+  }
+}
+
+async function sortCategoriesAlphabetically(){
+  STATE.categories.sort((first, second) =>
+    first.label.localeCompare(
+      second.label,
+      'fr',
+      { sensitivity: 'base' }
+    )
+  );
+
+  await saveCategoryOrder();
+
+  renderAll();
+  renderCategoryManager();
+}
+
+async function moveCategory(categoryId, direction){
+  const currentIndex = STATE.categories.findIndex(
+    category => category.id === categoryId
+  );
+
+  if(currentIndex === -1) return;
+
+  const targetIndex = currentIndex + direction;
+
+  if(
+    targetIndex < 0 ||
+    targetIndex >= STATE.categories.length
+  ){
+    return;
+  }
+
+  const movedCategory =
+    STATE.categories.splice(currentIndex, 1)[0];
+
+  STATE.categories.splice(
+    targetIndex,
+    0,
+    movedCategory
+  );
+
+  await saveCategoryOrder();
+
+  renderAll();
+  renderCategoryManager();
+}
+
+/* ---------------- EN-TÊTE COMPACT AU DÉFILEMENT ---------------- */
+
+function setupCompactHeader(){
+  const scroller = document.querySelector('main');
+  const header = document.getElementById('siteHeader');
+
+  if(!scroller || !header) return;
+
+  scroller.addEventListener(
+    'scroll',
+    () => {
+      header.classList.toggle(
+        'compact',
+        scroller.scrollTop > 40
+      );
+    },
+    { passive: true }
+  );
+}
 /* ---------------- MASTER RENDER ---------------- */
 function renderAll(){
   renderSplashScreen();
