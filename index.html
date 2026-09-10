@@ -1264,8 +1264,7 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   <div class="recipes-intro">
     <h2>🍳 À cuisiner</h2>
     <p>
-      Gardez vos envies de recettes et préparez vos courses
-      sans oublier les ingrédients.
+      Idées recettes et listes de course
     </p>
   </div>
 
@@ -1299,8 +1298,7 @@ header.has-photo{background-size:cover!important;background-position:center!impo
     </label>
 
     <p class="recipe-help">
-      Un ingrédient par ligne. Vous pouvez écrire une quantité,
-      puis une barre verticale.
+      Un ingrédient par ligne. Pour les quantités, mettre un chiffre et une barre verticale.
       <br>
       Exemple : <code>2 | courgettes</code>
     </p>
@@ -1441,7 +1439,7 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   </div>
 </div>
 
-<!-- Détail d'une idée (note / photo) -->
+<!-- Détail d'une idée (note/photo) -->
 <div class="overlay" id="detailOverlay">
   <div class="result-card detail-card">
     <div id="detailImageWrap"></div>
@@ -3671,7 +3669,7 @@ function renderRecipes(){
       <div class="recipe-empty">
         Votre future liste de recettes commence ici.
         <br>
-        Ajoutez une première envie à cuisiner. 🍝
+        Ajoutez une première envie à cuisiner 🍝
       </div>
     `;
 
@@ -4108,12 +4106,14 @@ let secretToastTimer = null;
 
 const SECRET_MESSAGES = [
   "Deux cerveaux pas vifs, mais beaucoup de beaux projets",
-  "Juste être avec toi c'est déjà un bon plan",
+  "Juste être avec toi c'est déjà une bonne soirée",
   "Alerte : beaucoup trop de projets pour de si grands plaisirs",
   "❤️",
   "J'ai hâte de ne jamais terminer cette liste infinie",
   "Bon doggo",
-  "Merci de t'être porté volontaire pour me cuisiner le prochain plat"
+  "Merci de t'être porté volontaire pour me cuisiner le prochain plat",
+  "Bouh",
+  "Le meilleur des quoiboubaca"
 ];
 function showSecretToast(message){
   const toast = document.getElementById('secretToast');
