@@ -1256,6 +1256,57 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   background:var(--paper-dim);
 }
 
+  /* ===== GRILLE DES IMAGES SURPRISES ===== */
+
+.surprise-images-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:8px;
+  margin-top:10px;
+}
+
+.surprise-image-slot{
+  position:relative;
+  aspect-ratio:1 / 1;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--paper-dim);
+}
+
+.surprise-image-slot img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.surprise-image-remove{
+  position:absolute;
+  top:3px;
+  right:3px;
+
+  width:21px;
+  height:21px;
+
+  border:0;
+  border-radius:7px;
+
+  background:rgba(30,22,36,.72);
+  color:#fff;
+
+  font-size:11px;
+  font-weight:700;
+  line-height:1;
+
+  cursor:pointer;
+}
+
+.surprise-images-empty{
+  grid-column:1 / -1;
+  padding:16px 12px;
+  border:1px dashed var(--line);
+  
   
 </style>
 </head>
@@ -1650,7 +1701,7 @@ header.has-photo{background-size:cover!important;background-position:center!impo
       <div class="photo-row"><div class="photo-preview" id="splashPhotoPreview">🌿</div><div class="photo-buttons"><label class="btn btn-primary btn-sm" for="splashPhotoInput">Choisir</label><input type="file" accept="image/*" id="splashPhotoInput" hidden><button class="btn btn-ghost btn-sm" id="removeSplashPhotoBtn">Retirer</button></div></div>
     </div>
 
-    <div class="settings-section">
+<div class="settings-section">
   <label
     class="field-label"
     style="font-size:14px;color:var(--plum-dark)"
@@ -1659,113 +1710,38 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   </label>
 
   <p class="settings-hint">
-    Maximum 3 photos possibles qui apparaîtront aléatoirement
+    Jusqu’à 10 photos. Elles apparaissent parfois
+    lorsque vous changez d’onglet.
   </p>
 
-  <div class="surprise-images-settings">
-    <div class="surprise-image-setting">
-      <div
-        class="photo-preview"
-        id="surpriseImagePreview0"
-      >
-        ✨
-      </div>
+  <div
+    class="surprise-images-grid"
+    id="surpriseImagesGrid"
+  ></div>
 
-      <div class="photo-buttons">
-        <label
-          class="btn btn-primary btn-sm"
-          for="surpriseImageInput0"
-        >
-          Image 1
-        </label>
+  <label
+    class="btn btn-primary btn-block btn-sm"
+    for="surpriseImagesInput"
+    style="margin-top:10px;"
+    id="addSurpriseImagesLabel"
+  >
+    + Ajouter des images
+  </label>
 
-        <input
-          type="file"
-          accept="image/*"
-          id="surpriseImageInput0"
-          hidden
-        >
+  <input
+    type="file"
+    accept="image/*"
+    id="surpriseImagesInput"
+    multiple
+    hidden
+  >
 
-        <button
-          type="button"
-          class="btn btn-ghost btn-sm"
-          data-action="remove-surprise-image"
-          data-surprise-index="0"
-        >
-          Retirer
-        </button>
-      </div>
-    </div>
-
-    <div class="surprise-image-setting">
-      <div
-        class="photo-preview"
-        id="surpriseImagePreview1"
-      >
-        ✨
-      </div>
-
-      <div class="photo-buttons">
-        <label
-          class="btn btn-primary btn-sm"
-          for="surpriseImageInput1"
-        >
-          Image 2
-        </label>
-
-        <input
-          type="file"
-          accept="image/*"
-          id="surpriseImageInput1"
-          hidden
-        >
-
-        <button
-          type="button"
-          class="btn btn-ghost btn-sm"
-          data-action="remove-surprise-image"
-          data-surprise-index="1"
-        >
-          Retirer
-        </button>
-      </div>
-    </div>
-
-    <div class="surprise-image-setting">
-      <div
-        class="photo-preview"
-        id="surpriseImagePreview2"
-      >
-        ✨
-      </div>
-
-      <div class="photo-buttons">
-        <label
-          class="btn btn-primary btn-sm"
-          for="surpriseImageInput2"
-        >
-          Image 3
-        </label>
-
-        <input
-          type="file"
-          accept="image/*"
-          id="surpriseImageInput2"
-          hidden
-        >
-
-        <button
-          type="button"
-          class="btn btn-ghost btn-sm"
-          data-action="remove-surprise-image"
-          data-surprise-index="2"
-        >
-          Retirer
-        </button>
-      </div>
-    </div>
-  </div>
+  <p
+    class="settings-hint"
+    id="surpriseImagesCount"
+  ></p>
 </div>
+    
     
     <div class="settings-section">
       <label class="field-label">Mes catégories</label>
@@ -1815,7 +1791,25 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   </div>
 </div>
 
-<div class="secret-toast" id="secretToast" role="status"></div>
+<!-- Popup des messages secrets -->
+<div
+  class="secret-popup"
+  id="secretPopup"
+  role="status"
+  aria-live="polite"
+>
+  <div class="secret-popup-card" id="secretPopupCard">
+    <div class="secret-popup-emoji" id="secretPopupEmoji">✨</div>
+
+    <p class="secret-popup-text" id="secretPopupText"></p>
+
+    <span class="secret-popup-hint">
+      Touchez pour fermer
+    </span>
+  </div>
+</div>
+  
+  
 <script>
 const KEY_DATA = 'on-fait-quoi-data';
 const KEY_SETTINGS = 'on-fait-quoi-settings';
@@ -1864,7 +1858,7 @@ categoryOrder: [],
 shoppingChecked: {},
 manualShoppingItems: [],
 itemOrders: {},
-surpriseImages: [null, null, null]
+surpriseImages: []
 };
 
 const SEED_CATEGORIES = [
@@ -4741,6 +4735,12 @@ document
       .getElementById('surpriseImageOverlay')
       .classList.remove('open');
   });
+  document
+  .getElementById('secretPopup')
+  .addEventListener('click', () => {
+    clearTimeout(secretToastTimer);
+    hideSecretPopup();
+  });
   
   document.getElementById('addCategoryFromSettingsBtn').addEventListener('click', addCategoryFromSettings);
   document.getElementById('loveCloseBtn').addEventListener('click', ()=> document.getElementById('loveOverlay').classList.remove('open'));
@@ -4774,18 +4774,89 @@ const SECRET_MESSAGES = [
   "💦💦💦 Me when u  💦💦💦",
   "Trêve de bavardages... Tu veux baiser ou pas ?"
 ];
-function showSecretToast(message){
-  const toast = document.getElementById('secretToast');
-  if(!toast) return;
+/* ---------------- POPUP DES MESSAGES SECRETS ---------------- */
 
-  toast.textContent = message;
-  toast.classList.add('visible');
+/*
+ * Durée d'affichage : environ une seconde de plus qu'auparavant.
+ */
+const SECRET_POPUP_DURATION = 3600;
+
+/*
+ * Fonds possibles, tous issus de la palette de l'application.
+ */
+const SECRET_POPUP_BACKGROUNDS = [
+  'linear-gradient(140deg,#6F477F 0%,#452C55 100%)',
+  'linear-gradient(140deg,#B79BDD 0%,#6F477F 100%)',
+  'linear-gradient(140deg,#7C2E4C 0%,#452C55 100%)',
+  'linear-gradient(140deg,#4E6FA8 0%,#452C55 100%)',
+  'linear-gradient(140deg,#4C8B69 0%,#2F5C46 100%)',
+  'linear-gradient(140deg,#D98CAC 0%,#7C2E4C 100%)',
+  'linear-gradient(140deg,#78956A 0%,#4C1731 100%)'
+];
+
+const SECRET_POPUP_EMOJIS = [
+  '✨','🌿','💜','🪴','🌙','🍀','🫶'
+];
+
+function hideSecretPopup(){
+  const popup = document.getElementById('secretPopup');
+
+  if(!popup) return;
+
+  popup.classList.remove('visible');
+}
+
+function showSecretToast(message){
+  const popup = document.getElementById('secretPopup');
+  const card = document.getElementById('secretPopupCard');
+  const text = document.getElementById('secretPopupText');
+  const emoji = document.getElementById('secretPopupEmoji');
+
+  if(!popup || !card || !text || !emoji) return;
+
+  text.textContent = message;
+
+  card.style.background =
+    SECRET_POPUP_BACKGROUNDS[
+      Math.floor(
+        Math.random() * SECRET_POPUP_BACKGROUNDS.length
+      )
+    ];
+
+  emoji.textContent =
+    SECRET_POPUP_EMOJIS[
+      Math.floor(
+        Math.random() * SECRET_POPUP_EMOJIS.length
+      )
+    ];
+
+  popup.classList.add('visible');
 
   clearTimeout(secretToastTimer);
-  secretToastTimer = setTimeout(()=>{
-    toast.classList.remove('visible');
-  }, 3500);
+
+  secretToastTimer = setTimeout(
+    hideSecretPopup,
+    SECRET_POPUP_DURATION
+  );
 }
+
+/*
+ * Affiche un message tiré au hasard.
+ * Ne fait rien si la liste est encore vide.
+ */
+function showRandomSecretMessage(messages){
+  if(!Array.isArray(messages) || messages.length === 0){
+    return;
+  }
+
+  const message =
+    messages[
+      Math.floor(Math.random() * messages.length)
+    ];
+
+  showSecretToast(message);
+}
+  
 
 function triggerTitleSecret(){
   titleClickCount++;
@@ -4844,6 +4915,115 @@ document
   .addEventListener('click', triggerTitleSecret);
 
 init();
+  /* ===== POPUP DES MESSAGES SECRETS ===== */
+
+.secret-popup{
+  position:fixed;
+  inset:0;
+  z-index:300;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:26px;
+
+  background:rgba(34,26,39,.42);
+  backdrop-filter:blur(4px);
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:opacity .3s ease;
+}
+
+.secret-popup.visible{
+  opacity:1;
+  pointer-events:auto;
+  cursor:pointer;
+}
+
+.secret-popup-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+
+  width:100%;
+  max-width:300px;
+  aspect-ratio:1 / 1;
+
+  padding:26px 22px;
+
+  border-radius:30px;
+
+  color:#fff;
+  text-align:center;
+
+  box-shadow:0 22px 50px rgba(32,24,37,.30);
+
+  transform:scale(.82) rotate(-2deg);
+  opacity:0;
+
+  transition:
+    transform .42s cubic-bezier(.2,1.35,.4,1),
+    opacity .3s ease;
+}
+
+.secret-popup.visible .secret-popup-card{
+  transform:scale(1) rotate(0deg);
+  opacity:1;
+}
+
+/* Sécurité pour les navigateurs sans aspect-ratio */
+@supports not (aspect-ratio: 1 / 1){
+  .secret-popup-card{
+    min-height:300px;
+  }
+}
+
+.secret-popup-emoji{
+  font-size:52px;
+  line-height:1;
+
+  animation:secretPopupFloat 2.4s ease-in-out infinite;
+}
+
+@keyframes secretPopupFloat{
+  0%,100%{ transform:translateY(0) scale(1); }
+  50%{ transform:translateY(-7px) scale(1.06); }
+}
+
+.secret-popup-text{
+  margin:0;
+
+  font-family:var(--app-font);
+  font-size:17px;
+  font-weight:700;
+  line-height:1.4;
+  letter-spacing:-.2px;
+
+  text-shadow:0 2px 10px rgba(0,0,0,.18);
+}
+
+.secret-popup-hint{
+  font-size:10.5px;
+  font-weight:600;
+  opacity:.72;
+  letter-spacing:.3px;
+}
+
+@media (max-width:360px){
+  .secret-popup-card{
+    max-width:265px;
+    padding:22px 18px;
+  }
+
+  .secret-popup-text{
+    font-size:15.5px;
+  }
+}
 </script>
 </body>
 </html>
