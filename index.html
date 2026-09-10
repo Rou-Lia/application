@@ -3509,11 +3509,11 @@ function maybeShowSurpriseImage(){
     getSurpriseImages().filter(Boolean);
 
   /*
-   * Une chance sur trois à chaque changement d’onglet.
+   * Une chance sur quatre à chaque changement d’onglet.
    */
   if(
     availableImages.length === 0 ||
-    Math.random() >= 1 / 3
+    Math.random() >= 1 / 4
   ){
     return;
   }
