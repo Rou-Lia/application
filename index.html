@@ -546,7 +546,6 @@ h1,.cat-heading,.spin-btn,.result-card h2,.love-overlay h2{font-family:var(--app
   .wheel-holder,#wheelSvg{width:260px;height:260px}
 }
 
-
 /* ===== ACCUEIL, PICTOGRAMMES ET CORRECTIFS ===== */
 .splash-screen{position:fixed;inset:0;z-index:250;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:44px 26px calc(36px + env(safe-area-inset-bottom));background:linear-gradient(150deg,#f2ecf8 0%,#e9f1e6 100%);text-align:center;transition:opacity .35s ease,transform .35s ease}
 .splash-screen.hidden{opacity:0;transform:scale(.985);pointer-events:none}
@@ -805,7 +804,7 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   line-height:1.45;
   font-weight:600;
 }
-  
+
 /* ===== ONGLET RECETTES ET COURSES ===== */
 
 .recipes-intro{
@@ -1331,8 +1330,121 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   grid-column:1 / -1;
   padding:16px 12px;
   border:1px dashed var(--line);
-  
-  
+  border-radius:13px;
+  color:var(--ink-soft);
+  font-size:12px;
+  text-align:center;
+}
+
+/* ===== POPUP DES MESSAGES SECRETS ===== */
+
+.secret-popup{
+  position:fixed;
+  inset:0;
+  z-index:300;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:26px;
+
+  background:rgba(34,26,39,.42);
+  backdrop-filter:blur(4px);
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:opacity .3s ease;
+}
+
+.secret-popup.visible{
+  opacity:1;
+  pointer-events:auto;
+  cursor:pointer;
+}
+
+.secret-popup-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+
+  width:100%;
+  max-width:300px;
+  aspect-ratio:1 / 1;
+
+  padding:26px 22px;
+
+  border-radius:30px;
+
+  color:#fff;
+  text-align:center;
+
+  box-shadow:0 22px 50px rgba(32,24,37,.30);
+
+  transform:scale(.82) rotate(-2deg);
+  opacity:0;
+
+  transition:
+    transform .42s cubic-bezier(.2,1.35,.4,1),
+    opacity .3s ease;
+}
+
+.secret-popup.visible .secret-popup-card{
+  transform:scale(1) rotate(0deg);
+  opacity:1;
+}
+
+/* Sécurité pour les navigateurs sans aspect-ratio */
+@supports not (aspect-ratio: 1 / 1){
+  .secret-popup-card{
+    min-height:300px;
+  }
+}
+
+.secret-popup-emoji{
+  font-size:52px;
+  line-height:1;
+
+  animation:secretPopupFloat 2.4s ease-in-out infinite;
+}
+
+@keyframes secretPopupFloat{
+  0%,100%{ transform:translateY(0) scale(1); }
+  50%{ transform:translateY(-7px) scale(1.06); }
+}
+
+.secret-popup-text{
+  margin:0;
+
+  font-family:var(--app-font);
+  font-size:17px;
+  font-weight:700;
+  line-height:1.4;
+  letter-spacing:-.2px;
+
+  text-shadow:0 2px 10px rgba(0,0,0,.18);
+}
+
+.secret-popup-hint{
+  font-size:10.5px;
+  font-weight:600;
+  opacity:.72;
+  letter-spacing:.3px;
+}
+
+@media (max-width:360px){
+  .secret-popup-card{
+    max-width:265px;
+    padding:22px 18px;
+  }
+
+  .secret-popup-text{
+    font-size:15.5px;
+  }
+}
 </style>
 </head>
 <body>
@@ -1560,7 +1672,7 @@ header.has-photo{background-size:cover!important;background-position:center!impo
     </button>
   </div>
 </section>
-  
+
   <section class="shopping-section">
     <div class="shopping-heading">
       <div>
@@ -1590,7 +1702,7 @@ header.has-photo{background-size:cover!important;background-position:center!impo
     <div id="recipesContent"></div>
   </section>
 </section>
-    
+
     <!-- HISTORIQUE -->
     <section class="view" id="view-history">
       <div id="historyContent" style="margin-top:14px;"></div>
@@ -1773,8 +1885,7 @@ header.has-photo{background-size:cover!important;background-position:center!impo
     id="surpriseImagesCount"
   ></p>
 </div>
-    
-    
+
     <div class="settings-section">
       <label class="field-label">Mes catégories</label>
 
@@ -1792,7 +1903,7 @@ header.has-photo{background-size:cover!important;background-position:center!impo
     <button class="btn btn-primary btn-block" id="closeSettingsBtn" style="margin-top:20px;">Fermer</button>
   </div>
 </div>
-  
+
 <!-- Image surprise lors d'un changement d'onglet -->
 <div class="overlay" id="surpriseImageOverlay">
   <div class="result-card surprise-image-card">
@@ -1812,7 +1923,7 @@ header.has-photo{background-size:cover!important;background-position:center!impo
     </button>
   </div>
 </div>
-  
+
 <!-- Message surprise aléatoire à l'ouverture -->
 <div class="overlay love-overlay" id="loveOverlay">
   <div class="result-card">
@@ -1840,8 +1951,7 @@ header.has-photo{background-size:cover!important;background-position:center!impo
     </span>
   </div>
 </div>
-  
-  
+
 <script>
 const KEY_DATA = 'on-fait-quoi-data';
 const KEY_SETTINGS = 'on-fait-quoi-settings';
@@ -2388,7 +2498,7 @@ async function removeRecipeFromDb(recipeId){
 
   if(error) throw error;
 }
-  
+
 /* ---------------- HEADER / THEME ---------------- */
 function applyTheme(){
   // Design unique fixé dans le CSS.
@@ -2619,6 +2729,7 @@ async function toggleDone(id){
 
     if(saved){
       renderAll();
+      checkCompletedMilestone();
     }
   }catch(error){
     console.error('Erreur lors du cochage :', error);
@@ -3448,85 +3559,74 @@ function addCategoryFromSettings(){
 
   /* ---------------- IMAGES SURPRISES ---------------- */
 
-function getSurpriseImages(){
-  const savedImages =
-    Array.isArray(STATE.settings.surpriseImages)
-      ? STATE.settings.surpriseImages
-      : [];
+const MAX_SURPRISE_IMAGES = 10;
 
-  /*
-   * Garantit toujours trois emplacements.
-   */
-  return [
-    savedImages[0] || null,
-    savedImages[1] || null,
-    savedImages[2] || null
-  ];
+function getSurpriseImages(){
+  const images = Array.isArray(STATE.settings.surpriseImages)
+    ? STATE.settings.surpriseImages
+    : [];
+  return images.filter(Boolean).slice(0, MAX_SURPRISE_IMAGES);
 }
 
 function renderSurpriseImagePreviews(){
+  const grid = document.getElementById('surpriseImagesGrid');
+  const count = document.getElementById('surpriseImagesCount');
+  const addLabel = document.getElementById('addSurpriseImagesLabel');
+  if(!grid) return;
+
   const images = getSurpriseImages();
+  grid.innerHTML = images.length
+    ? images.map((image, index) => `
+        <div class="surprise-image-slot">
+          <img src="${image}" alt="Image surprise ${index + 1}">
+          <button type="button" class="surprise-image-remove"
+            data-action="remove-surprise-image" data-surprise-index="${index}"
+            aria-label="Retirer l’image ${index + 1}">✕</button>
+        </div>`).join('')
+    : '<div class="surprise-images-empty">Aucune image surprise.</div>';
 
-  for(let index = 0; index < 3; index++){
-    const preview = document.getElementById(
-      `surpriseImagePreview${index}`
-    );
-
-    if(!preview) continue;
-
-    preview.innerHTML = images[index]
-      ? `<img src="${images[index]}">`
-      : '✨';
+  if(count) count.textContent = `${images.length}/${MAX_SURPRISE_IMAGES} image${images.length > 1 ? 's' : ''}`;
+  if(addLabel){
+    const full = images.length >= MAX_SURPRISE_IMAGES;
+    addLabel.style.display = full ? 'none' : '';
   }
+
+  grid.querySelectorAll('[data-action="remove-surprise-image"]').forEach(button => {
+    button.addEventListener('click', () => removeSurpriseImage(Number(button.dataset.surpriseIndex)));
+  });
 }
 
-async function saveSurpriseImage(index, file){
-  if(!file) return;
+async function addSurpriseImages(files){
+  const selectedFiles = Array.from(files || []);
+  if(!selectedFiles.length) return;
 
   const images = getSurpriseImages();
+  const availableSlots = MAX_SURPRISE_IMAGES - images.length;
+  if(availableSlots <= 0) return;
 
   try{
-    images[index] = await readAndCompressImage(
-      file,
-      800,
-      0.65
-    );
-
+    for(const file of selectedFiles.slice(0, availableSlots)){
+      images.push(await readAndCompressImage(file, 600, 0.55));
+    }
     STATE.settings.surpriseImages = images;
-
     await persistSettings();
-
     renderSurpriseImagePreviews();
-
   }catch(error){
-    console.error(
-      'Erreur lors de l’enregistrement de l’image surprise :',
-      error
-    );
-
-    alert(
-      "L'image surprise n'a pas pu être enregistrée."
-    );
+    console.error('Erreur lors de l’enregistrement des images surprises :', error);
+    alert("Les images surprises n’ont pas pu être enregistrées.");
   }
 }
 
 async function removeSurpriseImage(index){
   const images = getSurpriseImages();
-
-  images[index] = null;
-
+  if(index < 0 || index >= images.length) return;
+  images.splice(index, 1);
   STATE.settings.surpriseImages = images;
-
   try{
     await persistSettings();
-
     renderSurpriseImagePreviews();
-
   }catch(error){
-    console.error(
-      'Erreur lors de la suppression de l’image surprise :',
-      error
-    );
+    console.error('Erreur lors de la suppression de l’image surprise :', error);
   }
 }
 
@@ -3563,7 +3663,7 @@ function maybeShowSurpriseImage(){
 
   overlay.classList.add('open');
 }
-  
+
 function openSettings(){
   document.getElementById('titleInput').value=STATE.settings.title;
   document.getElementById('splashTitleInput').value=STATE.settings.splashTitle||DEFAULT_SETTINGS.splashTitle;
@@ -4105,7 +4205,7 @@ async function deleteManualShoppingItem(itemId){
     );
   }
 }
-  
+
 function renderShoppingList(){
   const container =
     document.getElementById('shoppingListContent');
@@ -4452,7 +4552,7 @@ function renderRecipes(){
       });
     });
 }
-  
+
 /* ---------------- MASTER RENDER ---------------- */
 function renderAll(){
   renderSplashScreen();
@@ -4546,6 +4646,12 @@ selectedWheelCats = new Set();
   }
   document.getElementById('loading').style.display = 'none';
   positionUnderline('list');
+  setupCompactHeader();
+
+  const sortCategoriesButton = document.getElementById('sortCategoriesBtn');
+  if(sortCategoriesButton){
+    sortCategoriesButton.addEventListener('click', sortCategoriesAlphabetically);
+  }
   renderSplashScreen();
   const splashScreen=document.getElementById('splashScreen');
   splashScreen.classList.remove('hidden');
@@ -4559,7 +4665,6 @@ selectedWheelCats = new Set();
     try{STATE.settings.splashImage=await readAndCompressImage(file,800,.65);renderSplashScreen();renderSettingsPreview();await persistSettings();}catch(error){console.error('Erreur image de bienvenue',error);}e.target.value='';
   });
   document.getElementById('removeSplashPhotoBtn').addEventListener('click',async()=>{STATE.settings.splashImage=null;renderSplashScreen();renderSettingsPreview();await persistSettings();});
-
 
   document.querySelectorAll('.nav-btn').forEach(btn=> btn.addEventListener('click', ()=> switchView(btn.dataset.view)));
 document
@@ -4585,7 +4690,7 @@ if(lazyModeButton){
 }
 
 updateLazyModeInterface();
-  
+
   document
   .getElementById('clearWheelCatsBtn')
   .addEventListener('click', () => {
@@ -4633,14 +4738,20 @@ document
       addManualShoppingItem();
     }
   });
-  
+
 document.getElementById('refreshBtn').addEventListener('click', async ()=>{
   triggerRefreshSecret();
   const btn = document.getElementById('refreshBtn');
-
   btn.disabled = true;
-  await refreshFromServer();
-  btn.disabled = false;
+  try{
+    await refreshFromServer();
+    await loadRecipes();
+    renderAll();
+  }catch(error){
+    console.error('Erreur lors de l’actualisation :', error);
+  }finally{
+    btn.disabled = false;
+  }
 });
 
   document.getElementById('searchInput').addEventListener('input', renderList);
@@ -4756,29 +4867,14 @@ await addItem(
     await persistSettings();
   });
 
-  for(let index = 0; index < 3; index++){
-  document
-    .getElementById(`surpriseImageInput${index}`)
-    .addEventListener('change', async event => {
-      const file = event.target.files[0];
-
-      await saveSurpriseImage(index, file);
-
-      event.target.value = '';
-    });
+  const surpriseImagesInput = document.getElementById('surpriseImagesInput');
+if(surpriseImagesInput){
+  surpriseImagesInput.addEventListener('change', async event => {
+    await addSurpriseImages(event.target.files);
+    event.target.value = '';
+  });
 }
 
-document
-  .querySelectorAll(
-    '[data-action="remove-surprise-image"]'
-  )
-  .forEach(button => {
-    button.addEventListener('click', () => {
-      removeSurpriseImage(
-        Number(button.dataset.surpriseIndex)
-      );
-    });
-  });
 const splashPlantButton =
   document.getElementById('splashPlantBtn');
 
@@ -4802,7 +4898,7 @@ document
     clearTimeout(secretToastTimer);
     hideSecretPopup();
   });
-  
+
   document.getElementById('addCategoryFromSettingsBtn').addEventListener('click', addCategoryFromSettings);
   document.getElementById('loveCloseBtn').addEventListener('click', ()=> document.getElementById('loveOverlay').classList.remove('open'));
 
@@ -4991,7 +5087,6 @@ function showRandomSecretMessage(messages){
 
   showSecretToast(message);
 }
-  
 
 function triggerTitleSecret(){
   titleClickCount++;
@@ -5050,115 +5145,6 @@ document
   .addEventListener('click', triggerTitleSecret);
 
 init();
-  /* ===== POPUP DES MESSAGES SECRETS ===== */
-
-.secret-popup{
-  position:fixed;
-  inset:0;
-  z-index:300;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  padding:26px;
-
-  background:rgba(34,26,39,.42);
-  backdrop-filter:blur(4px);
-
-  opacity:0;
-  pointer-events:none;
-
-  transition:opacity .3s ease;
-}
-
-.secret-popup.visible{
-  opacity:1;
-  pointer-events:auto;
-  cursor:pointer;
-}
-
-.secret-popup-card{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
-
-  width:100%;
-  max-width:300px;
-  aspect-ratio:1 / 1;
-
-  padding:26px 22px;
-
-  border-radius:30px;
-
-  color:#fff;
-  text-align:center;
-
-  box-shadow:0 22px 50px rgba(32,24,37,.30);
-
-  transform:scale(.82) rotate(-2deg);
-  opacity:0;
-
-  transition:
-    transform .42s cubic-bezier(.2,1.35,.4,1),
-    opacity .3s ease;
-}
-
-.secret-popup.visible .secret-popup-card{
-  transform:scale(1) rotate(0deg);
-  opacity:1;
-}
-
-/* Sécurité pour les navigateurs sans aspect-ratio */
-@supports not (aspect-ratio: 1 / 1){
-  .secret-popup-card{
-    min-height:300px;
-  }
-}
-
-.secret-popup-emoji{
-  font-size:52px;
-  line-height:1;
-
-  animation:secretPopupFloat 2.4s ease-in-out infinite;
-}
-
-@keyframes secretPopupFloat{
-  0%,100%{ transform:translateY(0) scale(1); }
-  50%{ transform:translateY(-7px) scale(1.06); }
-}
-
-.secret-popup-text{
-  margin:0;
-
-  font-family:var(--app-font);
-  font-size:17px;
-  font-weight:700;
-  line-height:1.4;
-  letter-spacing:-.2px;
-
-  text-shadow:0 2px 10px rgba(0,0,0,.18);
-}
-
-.secret-popup-hint{
-  font-size:10.5px;
-  font-weight:600;
-  opacity:.72;
-  letter-spacing:.3px;
-}
-
-@media (max-width:360px){
-  .secret-popup-card{
-    max-width:265px;
-    padding:22px 18px;
-  }
-
-  .secret-popup-text{
-    font-size:15.5px;
-  }
-}
 </script>
 </body>
 </html>
