@@ -2308,6 +2308,7 @@ const VISIT_SNAPSHOT_KEY =
 
 let pendingVisitChanges = null;
 let visitUpdatesAcknowledged = false;
+let recipesSuccessfullyLoaded = false;
   
 
 function uid(prefix){ return prefix + '-' + Date.now() + '-' + Math.random().toString(36).slice(2,7); }
@@ -4804,14 +4805,16 @@ function createVisitSnapshot(){
     recipesLoaded:
   recipesSuccessfullyLoaded,
 
-recipes: STATE.recipes.map(recipe => ({
-  id: recipe.id,
-  name: recipe.name,
-  updatedAt:
-    recipe.updatedAt ||
-    recipe.updated_at ||
-    null
-}))
+recipes: recipesSuccessfullyLoaded
+  ? STATE.recipes.map(recipe => ({
+      id: recipe.id,
+      name: recipe.name,
+      updatedAt:
+        recipe.updatedAt ||
+        recipe.updated_at ||
+        null
+    }))
+  : (readPreviousVisitSnapshot()?.recipes || [])
     
   };
 }
@@ -4873,166 +4876,70 @@ function createIndexedMap(entries){
   );
 }
 
-function compareVisitSnapshots(
-  previousSnapshot,
-  currentSnapshot
-){
-  const previousItems =
-    createIndexedMap(
-      previousSnapshot.items
-    );
-
-  const currentItems =
-    createIndexedMap(
-      currentSnapshot.items
-    );
-
-  const previousRecipes =
-    createIndexedMap(
-      previousSnapshot.recipes
-    );
-
-  const currentRecipes =
-    createIndexedMap(
-      currentSnapshot.recipes
-    );
+function compareVisitSnapshots(previousSnapshot, currentSnapshot){
+  const previousItems = createIndexedMap(previousSnapshot.items);
+  const currentItems = createIndexedMap(currentSnapshot.items);
 
   const changes = {
     addedItems: [],
     deletedItems: [],
     completedItems: [],
     restoredItems: [],
-
     addedRecipes: [],
     updatedRecipes: [],
     deletedRecipes: []
   };
 
-  currentItems.forEach(
-    (currentItem, itemId) => {
-      const previousItem =
-        previousItems.get(itemId);
+  currentItems.forEach((currentItem, itemId) => {
+    const previousItem = previousItems.get(itemId);
 
-      if(!previousItem){
-        changes.addedItems.push(
-          currentItem
-        );
-
-        return;
-      }
-
-      if(
-        !previousItem.done &&
-        currentItem.done
-      ){
-        changes.completedItems.push(
-          currentItem
-        );
-      }
-
-      if(
-        previousItem.done &&
-        !currentItem.done
-      ){
-        changes.restoredItems.push(
-          currentItem
-        );
-      }
+    if(!previousItem){
+      changes.addedItems.push(currentItem);
+      return;
     }
-  );
 
-  previousItems.forEach(
-    (previousItem, itemId) => {
-      if(!currentItems.has(itemId)){
-        changes.deletedItems.push(
-          previousItem
-        );
-      }
+    if(!previousItem.done && currentItem.done){
+      changes.completedItems.push(currentItem);
+    }else if(previousItem.done && !currentItem.done){
+      changes.restoredItems.push(currentItem);
     }
-  );
+  });
 
-  currentRecipes.forEach(
-    (currentRecipe, recipeId) => {
-      const previousRecipe =
-        previousRecipes.get(recipeId);
+  previousItems.forEach((previousItem, itemId) => {
+    if(!currentItems.has(itemId)){
+      changes.deletedItems.push(previousItem);
+    }
+  });
+
+  /* Ne compare les recettes que si leur chargement a réussi. */
+  if(currentSnapshot.recipesLoaded !== false){
+    const previousRecipes = createIndexedMap(previousSnapshot.recipes);
+    const currentRecipes = createIndexedMap(currentSnapshot.recipes);
+
+    currentRecipes.forEach((currentRecipe, recipeId) => {
+      const previousRecipe = previousRecipes.get(recipeId);
 
       if(!previousRecipe){
-        changes.addedRecipes.push(
-          currentRecipe
-        );
-
+        changes.addedRecipes.push(currentRecipe);
         return;
       }
 
-      const previousUpdate =
-        previousRecipe.updatedAt || '';
-
-      const currentUpdate =
-        currentRecipe.updatedAt || '';
-
       if(
-        previousUpdate &&
-        currentUpdate &&
-        previousUpdate !== currentUpdate
+        previousRecipe.updatedAt &&
+        currentRecipe.updatedAt &&
+        previousRecipe.updatedAt !== currentRecipe.updatedAt
       ){
-        changes.updatedRecipes.push(
-          currentRecipe
-        );
+        changes.updatedRecipes.push(currentRecipe);
       }
-    }
-  );
+    });
 
-  previousRecipes.forEach(
-    (previousRecipe, recipeId) => {
+    previousRecipes.forEach((previousRecipe, recipeId) => {
       if(!currentRecipes.has(recipeId)){
-        changes.deletedRecipes.push(
-          previousRecipe
-        );
+        changes.deletedRecipes.push(previousRecipe);
       }
-    }
-  );
-if(currentSnapshot.recipesLoaded !== false){
-  currentRecipes.forEach(
-    (currentRecipe, recipeId) => {
-      const previousRecipe =
-        previousRecipes.get(recipeId);
+    });
+  }
 
-      if(!previousRecipe){
-        changes.addedRecipes.push(
-          currentRecipe
-        );
-
-        return;
-      }
-
-      const previousUpdate =
-        previousRecipe.updatedAt || '';
-
-      const currentUpdate =
-        currentRecipe.updatedAt || '';
-
-      if(
-        previousUpdate &&
-        currentUpdate &&
-        previousUpdate !== currentUpdate
-      ){
-        changes.updatedRecipes.push(
-          currentRecipe
-        );
-      }
-    }
-  );
-
-  previousRecipes.forEach(
-    (previousRecipe, recipeId) => {
-      if(!currentRecipes.has(recipeId)){
-        changes.deletedRecipes.push(
-          previousRecipe
-        );
-      }
-    }
-  );
-}
   return changes;
 }
 
@@ -5326,6 +5233,7 @@ await loadData();
 
 try{
   await loadRecipes();
+  recipesSuccessfullyLoaded = true;
 
 }catch(error){
   console.error(
