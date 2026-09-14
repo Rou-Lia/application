@@ -1493,6 +1493,21 @@ header.has-photo{background-size:cover!important;background-position:center!impo
     cubic-bezier(.2,1.35,.4,1);
 }
 
+  /* La plante du popup est cliquable comme celle de l'accueil. */
+button.updates-icon{
+  padding:0;
+  border:0;
+  font-family:inherit;
+  line-height:1;
+  cursor:pointer;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+
+button.updates-icon:active{
+  transform:scale(.92) rotate(-6deg);
+  box-shadow:0 4px 12px rgba(69,44,85,.18);
+}
+  
 @keyframes updatesIconArrival{
   from{
     opacity:0;
@@ -2099,9 +2114,14 @@ header.has-photo{background-size:cover!important;background-position:center!impo
   <!-- Nouveautés depuis la dernière visite -->
 <div class="overlay" id="updatesOverlay">
   <div class="result-card updates-card">
-    <div class="updates-icon" aria-hidden="true">
+    <button
+      type="button"
+      class="updates-icon"
+      id="updatesPlantBtn"
+      aria-label="Arroser la plante"
+    >
       🌱
-    </div>
+    </button>
 
     <div class="updates-heading">
       <span class="updates-eyebrow">
@@ -5528,16 +5548,21 @@ if(surpriseImagesInput){
   });
 }
 
-const splashPlantButton =
-  document.getElementById('splashPlantBtn');
+/*
+ * Les plantes cliquables (accueil et popup des nouveautés)
+ * déclenchent exactement les mêmes messages cachés.
+ */
+[
+  document.getElementById('splashPlantBtn'),
+  document.getElementById('updatesPlantBtn')
+].forEach(plantButton => {
+  if(!plantButton) return;
 
-if(splashPlantButton){
-  splashPlantButton.addEventListener('click', () => {
-    showRandomSecretMessage(
-      PLANT_SECRET_MESSAGES
-    );
+  plantButton.addEventListener('click', event => {
+    event.stopPropagation();
+    showRandomSecretMessage(PLANT_SECRET_MESSAGES);
   });
-}
+});
   document
   .getElementById('updatesCloseBtn')
   .addEventListener(
